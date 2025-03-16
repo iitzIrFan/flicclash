@@ -25,8 +25,8 @@ export default function NavBar() {
         <nav
           className={`relative mx-auto max-w-7xl rounded-2xl border transition-all duration-300 ${
             scrolled
-              ? "border-white/30 bg-white/80 backdrop-blur-lg shadow-lg"
-              : "border-white/20 bg-white/10 backdrop-blur-md"
+              ? "border-white/40 bg-white/90 backdrop-blur-lg shadow-lg"
+              : "border-white/30 bg-gradient-to-r from-white/40 via-sky-50/40 to-white/40 backdrop-blur-md"
           }`}
         >
           <div className="px-4 sm:px-6 lg:px-8">
@@ -35,10 +35,10 @@ export default function NavBar() {
                 <div className="flex-shrink-0">
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-8 h-8 rounded-lg transition-all duration-300 ${
+                      className={`w-8 h-8 rounded-lg transition-all duration-300 flex items-center justify-center ${
                         scrolled
-                          ? "bg-orange-500 shadow-md"
-                          : "bg-orange-500/90 backdrop-blur-sm shadow-lg"
+                          ? "bg-gradient-to-r from-sky-300 to-blue-300 shadow-md"
+                          : "bg-gradient-to-r from-sky-200 to-blue-400 shadow-lg"
                       }`}
                     >
                       <svg
@@ -96,7 +96,7 @@ export default function NavBar() {
                 </Link>
                 <Link
                   href="/sign-up"
-                  className="bg-orange-500/90 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 shadow-lg hover:shadow-xl backdrop-blur-sm"
+                  className="bg-gradient-to-r from-sky-300 to-blue-200 hover:from-sky-400 hover:to-blue-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 shadow-lg hover:shadow-xl"
                 >
                   Get Started
                   <svg
