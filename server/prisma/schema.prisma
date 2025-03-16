@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Contest {
+  id          Int       @id @default(autoincrement())
+  name        String
+  platform    Platform
+  startTime   DateTime  @map("start_time")
+  endTime     DateTime  @map("end_time")
+  url         String
+  solutionUrl String?   @map("solution_url")
+  duration    Int       // in minutes
+  externalId  String?   @map("external_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  bookmarks   Bookmark[]
+
+  @@unique([platform, externalId])
+  @@map("contests")
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  clerkId          String    @unique @map("clerk_id")
+  email            String
+  phoneNumber      String?   @map("phone_number")
+  codeforces       Boolean   @default(true) @map("codeforces_enabled")
+  codechef         Boolean   @default(true) @map("codechef_enabled")
+  leetcode         Boolean   @default(true) @map("leetcode_enabled")
+  notificationType NotificationType @default(email) @map("notification_type")
+  reminderTime     Int       @default(60) @map("reminder_time") // minutes before contest
+  isAdmin          Boolean   @default(false) @map("is_admin")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  bookmarks        Bookmark[]
+
+  @@map("users")
+}
+
+model Bookmark {
+  id           Int      @id @default(autoincrement())
+  userId       String   @map("user_id")
+  contestId    Int      @map("contest_id")
+  reminderSent Boolean  @default(false) @map("reminder_sent")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  user         User     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  contest      Contest  @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contestId])
+  @@map("bookmarks")
+}
+
+enum Platform {
+  Codeforces
+  CodeChef
+  LeetCode
+}
+
+enum NotificationType {
+  email
+  sms
+  both
+} 
