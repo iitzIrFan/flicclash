@@ -65,37 +65,63 @@ export async function fetchCodeChefContests(): Promise<void> {
 
     // Process future and present contests
     for (const contest of [...future_contests, ...present_contests]) {
-      const startTime = new Date(contest.start_date);
-      const endTime = new Date(contest.end_date);
+      // Validate dates before creating Date objects
+      if (!contest.start_date || !contest.end_date) {
+        console.warn(
+          `Skipping contest with invalid dates: ${contest.contest_code}`
+        );
+        continue;
+      }
 
-      await prisma.contest.upsert({
-        where: {
-          platform_externalId: {
+      // Try to parse dates with proper format
+      try {
+        // CodeChef dates might be in different formats, try ISO format first
+        const startTime = new Date(contest.start_date);
+        const endTime = new Date(contest.end_date);
+
+        // Check if dates are valid
+        if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+          console.warn(
+            `Skipping contest with invalid date format: ${contest.contest_code}`
+          );
+          continue;
+        }
+
+        const duration = Math.floor(
+          (endTime.getTime() - startTime.getTime()) / (60 * 1000)
+        );
+
+        await prisma.contest.upsert({
+          where: {
+            platform_externalId: {
+              platform: Platform.CodeChef,
+              externalId: contest.contest_code,
+            },
+          },
+          update: {
+            name: contest.contest_name,
+            startTime,
+            endTime,
+            url: `https://www.codechef.com/${contest.contest_code}`,
+            duration,
+          },
+          create: {
+            name: contest.contest_name,
             platform: Platform.CodeChef,
+            startTime,
+            endTime,
+            url: `https://www.codechef.com/${contest.contest_code}`,
+            duration,
             externalId: contest.contest_code,
           },
-        },
-        update: {
-          name: contest.contest_name,
-          startTime,
-          endTime,
-          url: `https://www.codechef.com/${contest.contest_code}`,
-          duration: Math.floor(
-            (endTime.getTime() - startTime.getTime()) / (60 * 1000)
-          ), // Convert to minutes
-        },
-        create: {
-          name: contest.contest_name,
-          platform: Platform.CodeChef,
-          startTime,
-          endTime,
-          url: `https://www.codechef.com/${contest.contest_code}`,
-          duration: Math.floor(
-            (endTime.getTime() - startTime.getTime()) / (60 * 1000)
-          ), // Convert to minutes
-          externalId: contest.contest_code,
-        },
-      });
+        });
+      } catch (error) {
+        console.warn(
+          `Error processing contest ${contest.contest_code}:`,
+          error
+        );
+        continue;
+      }
     }
 
     // Process past contests from the last week
@@ -143,7 +169,6 @@ export async function fetchCodeChefContests(): Promise<void> {
   }
 }
 
-// Fetch contests from LeetCode
 export async function fetchLeetCodeContests(): Promise<void> {
   try {
     const response = await axios.get("https://leetcode.com/graphql", {
