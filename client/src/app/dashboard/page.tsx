@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { UserButton } from "@clerk/nextjs";
-import { useUser } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface Contest {
   id: string;
@@ -48,12 +47,19 @@ export default function Dashboard() {
       }
     };
 
+    // Initial fetch
     fetchContests();
+
+    // Set up periodic refresh every 5 minutes
+    const intervalId = setInterval(fetchContests, 5 * 60 * 1000);
 
     // Fetch bookmarks if user is logged in
     if (isLoaded && user) {
       fetchBookmarks();
     }
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [isLoaded, user]);
 
   const fetchBookmarks = async () => {

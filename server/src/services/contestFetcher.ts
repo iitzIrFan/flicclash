@@ -1,7 +1,6 @@
-import axios from "axios";
-import cheerio from "cheerio";
-import prisma from "../lib/prisma";
 import { Platform } from "@prisma/client";
+import axios from "axios";
+import prisma from "../lib/prisma";
 
 // Fetch contests from Codeforces
 export async function fetchCodeforcesContests(): Promise<void> {
@@ -59,30 +58,32 @@ export async function fetchCodeforcesContests(): Promise<void> {
 export async function fetchCodeChefContests(): Promise<void> {
   try {
     const response = await axios.get(
-      "https://www.codechef.com/api/list/contests/all"
+      "https://www.codechef.com/api/list/contests/all",
+      {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+      }
     );
+
+    console.log("CodeChef API Response:", response.data); // Debug log
+
     const { future_contests, present_contests, past_contests } = response.data;
 
     // Process future and present contests
     for (const contest of [...future_contests, ...present_contests]) {
-      // Validate dates before creating Date objects
-      if (!contest.start_date || !contest.end_date) {
-        console.warn(
-          `Skipping contest with invalid dates: ${contest.contest_code}`
-        );
-        continue;
-      }
-
-      // Try to parse dates with proper format
       try {
-        // CodeChef dates might be in different formats, try ISO format first
-        const startTime = new Date(contest.start_date);
-        const endTime = new Date(contest.end_date);
+        // Parse dates using the ISO format provided by the API
+        const startTime = new Date(contest.contest_start_date_iso);
+        const endTime = new Date(contest.contest_end_date_iso);
 
         // Check if dates are valid
         if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
           console.warn(
-            `Skipping contest with invalid date format: ${contest.contest_code}`
+            `Skipping contest with invalid date format: ${contest.contest_code}`,
+            contest.contest_start_date_iso,
+            contest.contest_end_date_iso
           );
           continue;
         }
@@ -90,6 +91,12 @@ export async function fetchCodeChefContests(): Promise<void> {
         const duration = Math.floor(
           (endTime.getTime() - startTime.getTime()) / (60 * 1000)
         );
+
+        console.log(`Processing CodeChef contest: ${contest.contest_name}`, {
+          startTime,
+          endTime,
+          duration
+        });
 
         await prisma.contest.upsert({
           where: {
@@ -129,38 +136,56 @@ export async function fetchCodeChefContests(): Promise<void> {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     for (const contest of past_contests) {
-      const endTime = new Date(contest.end_date);
-      if (endTime >= oneWeekAgo) {
-        const startTime = new Date(contest.start_date);
+      try {
+        // Parse dates using the ISO format provided by the API
+        const startTime = new Date(contest.contest_start_date_iso);
+        const endTime = new Date(contest.contest_end_date_iso);
 
-        await prisma.contest.upsert({
-          where: {
-            platform_externalId: {
+        if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+          console.warn(
+            `Skipping past contest with invalid date format: ${contest.contest_code}`,
+            contest.contest_start_date_iso,
+            contest.contest_end_date_iso
+          );
+          continue;
+        }
+
+        if (endTime >= oneWeekAgo) {
+          const duration = Math.floor(
+            (endTime.getTime() - startTime.getTime()) / (60 * 1000)
+          );
+
+          await prisma.contest.upsert({
+            where: {
+              platform_externalId: {
+                platform: Platform.CodeChef,
+                externalId: contest.contest_code,
+              },
+            },
+            update: {
+              name: contest.contest_name,
+              startTime,
+              endTime,
+              url: `https://www.codechef.com/${contest.contest_code}`,
+              duration,
+            },
+            create: {
+              name: contest.contest_name,
               platform: Platform.CodeChef,
+              startTime,
+              endTime,
+              url: `https://www.codechef.com/${contest.contest_code}`,
+              duration,
               externalId: contest.contest_code,
             },
-          },
-          update: {
-            name: contest.contest_name,
-            startTime,
-            endTime,
-            url: `https://www.codechef.com/${contest.contest_code}`,
-            duration: Math.floor(
-              (endTime.getTime() - startTime.getTime()) / (60 * 1000)
-            ), // Convert to minutes
-          },
-          create: {
-            name: contest.contest_name,
-            platform: Platform.CodeChef,
-            startTime,
-            endTime,
-            url: `https://www.codechef.com/${contest.contest_code}`,
-            duration: Math.floor(
-              (endTime.getTime() - startTime.getTime()) / (60 * 1000)
-            ), // Convert to minutes
-            externalId: contest.contest_code,
-          },
-        });
+          });
+        }
+      } catch (error) {
+        console.warn(
+          `Error processing past contest ${contest.contest_code}:`,
+          error
+        );
+        continue;
       }
     }
   } catch (error) {
