@@ -1,70 +1,34 @@
 import { NextResponse } from "next/server";
 
-const dummyContests = [
-  {
-    id: "1",
-    name: "Codeforces Round #789",
-    platform: "Codeforces",
-    startTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
-    endTime: new Date(
-      Date.now() + 2 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000
-    ).toISOString(), // 2 hours duration
-    url: "https://codeforces.com/contests",
-  },
-  {
-    id: "2",
-    name: "CodeChef Starters 42",
-    platform: "CodeChef",
-    startTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
-    endTime: new Date(
-      Date.now() + 5 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000
-    ).toISOString(), // 3 hours duration
-    url: "https://www.codechef.com/contests",
-  },
-  {
-    id: "3",
-    name: "LeetCode Weekly Contest 300",
-    platform: "LeetCode",
-    startTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
-    endTime: new Date(
-      Date.now() + 3 * 24 * 60 * 60 * 1000 + 1.5 * 60 * 60 * 1000
-    ).toISOString(), // 1.5 hours duration
-    url: "https://leetcode.com/contest/",
-  },
-  {
-    id: "4",
-    name: "Codeforces Round #788",
-    platform: "Codeforces",
-    startTime: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-    endTime: new Date(
-      Date.now() - 3 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000
-    ).toISOString(), // 2 hours duration
-    url: "https://codeforces.com/contests",
-    solutionUrl: "https://www.youtube.com/watch?v=example1",
-  },
-  {
-    id: "5",
-    name: "CodeChef Starters 41",
-    platform: "CodeChef",
-    startTime: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
-    endTime: new Date(
-      Date.now() - 5 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000
-    ).toISOString(), // 3 hours duration
-    url: "https://www.codechef.com/contests",
-  },
-];
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const pastOnly = searchParams.get("past") === "true";
+  const pastParam = searchParams.get("past");
+  const platformParam = searchParams.get("platform");
 
-  const now = new Date();
+  let url = `${process.env.NEXT_PUBLIC_API_URL}/api/contests`;
 
-  let contests = dummyContests;
+  // Add query parameters if they exist
+  const params = new URLSearchParams();
+  if (pastParam) params.append("past", pastParam);
+  if (platformParam) params.append("platform", platformParam);
 
-  if (pastOnly) {
-    contests = contests.filter((contest) => new Date(contest.endTime) < now);
+  if (params.toString()) {
+    url += `?${params.toString()}`;
   }
 
-  return NextResponse.json(contests);
+  console.log("Fetching contests from:", url); // Debug log
+
+  try {
+    const response = await fetch(url);
+    console.log("Response status:", response.status); // Debug log
+
+    if (!response.ok) throw new Error("Failed to fetch contests");
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error in contests API route:", error);
+    // Return empty array instead of error status
+    return NextResponse.json([]);
+  }
 }

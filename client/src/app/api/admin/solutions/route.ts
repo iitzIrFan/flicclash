@@ -1,32 +1,38 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
-const adminUsers = ["user_2NNcWHK2hYdRJJ8vL8LLQOt6oqb"];
-const solutions = new Map();
-
 export async function POST(request: Request) {
   const auth_session = await auth();
-  const { userId } = auth_session;
+  const token = await auth_session.getToken();
 
-  if (!userId) {
+  if (!token) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const isAdmin = adminUsers.includes(userId);
+  try {
+    const body = await request.json();
 
-  if (!isAdmin) {
-    return new Response("Forbidden", { status: 403 });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/admin/solutions`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to update solution");
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error in solutions POST API route:", error);
+    return NextResponse.json(
+      { error: "Failed to update solution" },
+      { status: 500 }
+    );
   }
-
-  const { contestId, solutionUrl } = await request.json();
-
-  if (!contestId || !solutionUrl) {
-    return new Response("Contest ID and solution URL are required", {
-      status: 400,
-    });
-  }
-
-  solutions.set(contestId, solutionUrl);
-
-  return NextResponse.json({ success: true });
 }

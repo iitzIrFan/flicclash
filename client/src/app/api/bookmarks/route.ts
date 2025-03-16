@@ -1,77 +1,101 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
-let bookmarks = [
-  { userId: "user_123", contestId: "1" },
-  { userId: "user_123", contestId: "3" },
-];
-
 export async function GET() {
   const auth_session = await auth();
-  const { userId } = auth_session;
+  const token = await auth_session.getToken();
 
-  if (!userId) {
+  if (!token) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const userBookmarks = bookmarks.filter(
-    (bookmark) => bookmark.userId === userId
-  );
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/bookmarks`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  return NextResponse.json(userBookmarks);
+    if (!response.ok) throw new Error("Failed to fetch bookmarks");
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error in bookmarks GET API route:", error);
+    return NextResponse.json([], { status: 200 });
+  }
 }
 
 export async function POST(request: Request) {
   const auth_session = await auth();
-  const { userId } = auth_session;
+  const token = await auth_session.getToken();
 
-  if (!userId) {
+  if (!token) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { contestId } = await request.json();
+  try {
+    const body = await request.json();
 
-  if (!contestId) {
-    return new Response("Contest ID is required", { status: 400 });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/bookmarks`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to create bookmark");
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error in bookmarks POST API route:", error);
+    return NextResponse.json(
+      { error: "Failed to create bookmark" },
+      { status: 500 }
+    );
   }
-
-  const existingBookmark = bookmarks.find(
-    (bookmark) => bookmark.userId === userId && bookmark.contestId === contestId
-  );
-
-  if (existingBookmark) {
-    return new Response("Bookmark already exists", { status: 409 });
-  }
-
-  // Add new bookmark
-  bookmarks.push({ userId, contestId });
-
-  return NextResponse.json({ success: true });
 }
 
 export async function DELETE(request: Request) {
   const auth_session = await auth();
-  const { userId } = auth_session;
+  const token = await auth_session.getToken();
 
-  if (!userId) {
+  if (!token) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { contestId } = await request.json();
+  try {
+    const body = await request.json();
 
-  if (!contestId) {
-    return new Response("Contest ID is required", { status: 400 });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/bookmarks`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to delete bookmark");
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error in bookmarks DELETE API route:", error);
+    return NextResponse.json(
+      { error: "Failed to delete bookmark" },
+      { status: 500 }
+    );
   }
-
-  const initialLength = bookmarks.length;
-  bookmarks = bookmarks.filter(
-    (bookmark) =>
-      !(bookmark.userId === userId && bookmark.contestId === contestId)
-  );
-
-  if (bookmarks.length === initialLength) {
-    return new Response("Bookmark not found", { status: 404 });
-  }
-
-  return NextResponse.json({ success: true });
 }
