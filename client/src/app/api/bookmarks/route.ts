@@ -9,15 +9,14 @@ export async function GET() {
     return new Response("Unauthorized", { status: 401 });
   }
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/bookmarks`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/bookmarks`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!response.ok) throw new Error("Failed to fetch bookmarks");
 
