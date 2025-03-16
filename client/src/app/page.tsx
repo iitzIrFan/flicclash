@@ -1,65 +1,131 @@
-
-
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import AnimationStyles from "@/components/AnimationStyles";
+import NavBar from "@/components/NavBar";
 
 export default async function Home() {
   const user = await currentUser();
-
-  // If user is logged in, redirect to dashboard
-  if (user) {
-    redirect("/dashboard");
-  }
+  if (user) redirect("/dashboard");
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-blue-900 to-black text-white">
-      <div className="max-w-4xl w-full text-center">
-        <h1 className="text-5xl font-bold mb-6">Contest Tracker</h1>
-        <p className="text-xl mb-8">
-          Track upcoming and past coding contests from Codeforces, CodeChef, and
-          LeetCode all in one place.
-        </p>
+    <main className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 overflow-hidden relative">
+      <AnimationStyles />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-blue-800 bg-opacity-50 p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-3">Track Contests</h2>
-            <p>
-              Stay updated with all upcoming contests from major competitive
-              programming platforms.
-            </p>
+      {/* Background Elements */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div className="absolute -left-32 -top-32 w-96 h-96 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
+      <div className="absolute -right-32 -bottom-32 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-delay"></div>
+
+      {/* Sticky Navbar */}
+      <NavBar />
+
+      {/* Add padding to account for fixed navbar */}
+      <div className="pt-24">
+        {/* Hero Section */}
+        <div className="relative pt-24 pb-16 sm:pt-32 sm:pb-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* New Tag */}
+            <div className="flex justify-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full border border-gray-200 shadow-sm">
+                <span className="text-xs font-medium text-gray-600">New</span>
+                <span className="flex items-center gap-1 text-xs font-medium text-orange-600">
+                  <svg
+                    className="w-3 h-3"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Smart AI Features
+                </span>
+              </div>
+            </div>
+
+            {/* Main Heading */}
+            <div className="text-center max-w-4xl mx-auto">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 tracking-tight">
+                Perfect Every Step for{" "}
+                <span className="text-orange-500">Extraordinary Growth.</span>
+              </h1>
+              <p className="mt-6 text-xl text-gray-600 max-w-2xl mx-auto">
+                Enhance your competitive programming journey with intelligent
+                targeted strategies and never miss an opportunity.
+              </p>
+            </div>
+
+            {/* Stats Section */}
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {/* Active Users Card */}
+              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-all">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500">Total active users</p>
+                    <p className="text-2xl font-bold text-gray-900">150K+</p>
+                  </div>
+                  <div className="flex -space-x-2">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Contest Stats Card */}
+              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-all">
+                <div>
+                  <p className="text-sm text-gray-500">Monthly Contests</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    <span className="text-green-500">↑</span> 5,490
+                  </p>
+                </div>
+              </div>
+
+              {/* Solutions Card */}
+              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-all">
+                <div>
+                  <p className="text-sm text-gray-500">Available Solutions</p>
+                  <p className="text-2xl font-bold text-gray-900">8,370+</p>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="mt-12 flex justify-center gap-4">
+              <Link
+                href="/sign-up"
+                className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 rounded-xl text-lg font-medium transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+              >
+                Start Free Trial
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
+                </svg>
+              </Link>
+              <Link
+                href="/demo"
+                className="bg-white hover:bg-gray-50 text-gray-900 px-8 py-4 rounded-xl text-lg font-medium transition-all shadow-lg hover:shadow-xl border border-gray-200"
+              >
+                View Demo
+              </Link>
+            </div>
           </div>
-
-          <div className="bg-blue-800 bg-opacity-50 p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-3">Bookmark</h2>
-            <p>
-              Save contests you are interested in and get reminders before they
-              start.
-            </p>
-          </div>
-
-          <div className="bg-blue-800 bg-opacity-50 p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-3">Solutions</h2>
-            <p>
-              Access contest solutions from our YouTube channel after the
-              contest ends.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/sign-in"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/sign-up"
-            className="bg-transparent hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg border-2 border-white transition-colors"
-          >
-            Sign Up
-          </Link>
         </div>
       </div>
     </main>
