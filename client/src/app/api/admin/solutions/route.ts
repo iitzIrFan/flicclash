@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
-// This would be replaced with actual database calls
-const adminUsers = ["user_2NNcWHK2hYdRJJ8vL8LLQOt6oqb"]; // Example admin user ID
+const adminUsers = ["user_2NNcWHK2hYdRJJ8vL8LLQOt6oqb"];
 const solutions = new Map();
 
 export async function POST(request: Request) {
@@ -13,7 +12,6 @@ export async function POST(request: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  // Check if user is an admin
   const isAdmin = adminUsers.includes(userId);
 
   if (!isAdmin) {
@@ -28,7 +26,6 @@ export async function POST(request: Request) {
     });
   }
 
-  // Save solution URL
   solutions.set(contestId, solutionUrl);
 
   return NextResponse.json({ success: true });

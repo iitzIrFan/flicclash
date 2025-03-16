@@ -30,7 +30,6 @@ export default function SolutionManager() {
       redirect("/");
     }
 
-    // Check if user is admin (you'll need to implement this check)
     const checkAdmin = async () => {
       try {
         const response = await fetch("/api/admin/check");

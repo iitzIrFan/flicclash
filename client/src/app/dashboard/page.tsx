@@ -5,7 +5,6 @@ import { UserButton } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
-// Types for our contests
 interface Contest {
   id: string;
   name: string;

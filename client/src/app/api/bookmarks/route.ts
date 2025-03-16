@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
-// This would be replaced with actual database calls
 let bookmarks = [
   { userId: "user_123", contestId: "1" },
   { userId: "user_123", contestId: "3" },
@@ -15,7 +14,6 @@ export async function GET() {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  // Filter bookmarks for the current user
   const userBookmarks = bookmarks.filter(
     (bookmark) => bookmark.userId === userId
   );
@@ -37,7 +35,6 @@ export async function POST(request: Request) {
     return new Response("Contest ID is required", { status: 400 });
   }
 
-  // Check if bookmark already exists
   const existingBookmark = bookmarks.find(
     (bookmark) => bookmark.userId === userId && bookmark.contestId === contestId
   );
@@ -66,7 +63,6 @@ export async function DELETE(request: Request) {
     return new Response("Contest ID is required", { status: 400 });
   }
 
-  // Remove bookmark
   const initialLength = bookmarks.length;
   bookmarks = bookmarks.filter(
     (bookmark) =>

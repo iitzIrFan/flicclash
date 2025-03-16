@@ -27,13 +27,11 @@ export default function BookmarksPage() {
 
         const bookmarks = await response.json();
 
-        // Fetch contest details for each bookmark
         const contestsResponse = await fetch("/api/contests");
         if (!contestsResponse.ok) throw new Error("Failed to fetch contests");
 
         const allContests = await contestsResponse.json();
 
-        // Filter contests that are bookmarked
         const bookmarkedContests = allContests
           .filter((contest: Contest) =>
             bookmarks.some(
@@ -58,10 +56,8 @@ export default function BookmarksPage() {
 
   const removeBookmark = async (contestId: string) => {
     try {
-      // Optimistically update UI
       setBookmarkedContests((prev) => prev.filter((c) => c.id !== contestId));
 
-      // Send request to server
       const response = await fetch("/api/bookmarks", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -73,10 +69,8 @@ export default function BookmarksPage() {
       }
     } catch (error) {
       console.error("Error removing bookmark:", error);
-      // Refetch bookmarks if there was an error
-      const fetchBookmarkedContests = async () => {
-        // ... same as above
-      };
+
+      const fetchBookmarkedContests = async () => {};
       fetchBookmarkedContests();
     }
   };
