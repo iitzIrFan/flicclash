@@ -1,5 +1,6 @@
 "use client";
 
+import { ContestSolutions } from '@/components/ContestSolutions';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,9 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useClickOutside } from "@/hooks/useClickOutside";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Bookmark, ExternalLink, Play, Trophy } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Contest {
   id: string;
@@ -41,6 +43,8 @@ export default function Dashboard() {
     "LeetCode",
   ]);
   const [view, setView] = useState<"upcoming" | "past">("upcoming");
+  const [selectedContest, setSelectedContest] = useState<Contest | null>(null);
+  const solutionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchContests = async () => {
@@ -147,6 +151,14 @@ export default function Dashboard() {
       ((view === "upcoming" && !isPast) ||
         (view === "past" && isPast && isRecent))
     );
+  });
+
+  const handleContestClick = (contest: Contest) => {
+    setSelectedContest(contest);
+  };
+
+  useClickOutside(solutionsRef, () => {
+    setSelectedContest(null);
   });
 
   if (!isLoaded) {
@@ -289,7 +301,10 @@ export default function Dashboard() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => toggleBookmark(contest.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleBookmark(contest.id);
+                            }}
                             className="text-gray-400 hover:text-yellow-500 transition-colors duration-200"
                             aria-label={
                               contest.isBookmarked
@@ -303,22 +318,50 @@ export default function Dashboard() {
                               }`}
                             />
                           </Button>
-                          {view === "past" && contest.solutionUrl && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              asChild
-                            >
-                              <a
-                                href={contest.solutionUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-red-500 transition-colors duration-200"
-                                aria-label="Watch solution"
+                          {view === "past" && (
+                            <>
+                              {contest.solutionUrl && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  asChild
+                                >
+                                  <a
+                                    href={contest.solutionUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-400 hover:text-red-500 transition-colors duration-200"
+                                    aria-label="Watch solution"
+                                  >
+                                    <Play className="h-5 w-5" />
+                                  </a>
+                                </Button>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleContestClick(contest);
+                                }}
+                                className={`text-gray-400 hover:text-blue-500 transition-colors duration-200 ${
+                                  selectedContest?.id === contest.id ? "text-blue-500" : ""
+                                }`}
                               >
                                 <Play className="h-5 w-5" />
-                              </a>
-                            </Button>
+                              </Button>
+                              {selectedContest?.id === contest.id && (
+                                <div 
+                                  ref={solutionsRef}
+                                  className="absolute right-16 mt-2 bg-white rounded-lg shadow-xl border p-4 w-96 z-20"
+                                >
+                                  <ContestSolutions
+                                    contestName={contest.name}
+                                    channelId="UCkGxt0Twkuf8e0nEQm5_-Ig"
+                                  />
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       </TableCell>
