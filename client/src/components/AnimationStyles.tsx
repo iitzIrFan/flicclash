@@ -59,6 +59,45 @@ export default function AnimationStyles() {
         }
       }
 
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.2;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+
+      @keyframes orbit {
+        0% {
+          transform: rotate(0deg) translateX(10px) rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg) translateX(10px) rotate(-360deg);
+        }
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+        }
+        25% {
+          transform: translateY(25vh) rotate(45deg);
+        }
+        50% {
+          transform: translateY(50vh) rotate(90deg);
+        }
+        75% {
+          transform: translateY(75vh) rotate(135deg);
+        }
+        100% {
+          transform: translateY(100vh) rotate(180deg);
+        }
+      }
+
       .animate-float {
         animation: float 20s ease-in-out infinite;
       }
@@ -74,6 +113,18 @@ export default function AnimationStyles() {
       .animate-shimmer {
         background-size: 200% auto;
         animation: shimmer 6s linear infinite;
+      }
+
+      .animate-twinkle {
+        animation: twinkle 4s ease-in-out infinite;
+      }
+
+      .animate-orbit {
+        animation: orbit 20s linear infinite;
+      }
+
+      .animate-fall {
+        animation: fall 30s linear infinite;
       }
 
       /* Add smooth transition for mobile menu */

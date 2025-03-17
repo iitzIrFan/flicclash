@@ -1,5 +1,8 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 import AnimationStyles from "@/components/AnimationStyles";
 import NavBar from "@/components/NavBar";
 import Image from "next/image";
@@ -7,14 +10,20 @@ import { FeatureCard } from "@/components/FeatureCard";
 import { FloatingImages } from "@/components/FloatingImages";
 import { HeroGlow } from "@/components/HeroGlow";
 import { FaqSection } from "@/components/FaqSection";
+import { StarryBackground } from "@/components/StarryBackground";
 
-export default async function Home() {
-  const user = await currentUser();
-  if (user) redirect("/dashboard");
+export default function Home() {
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isSignedIn) router.push("/dashboard");
+  }, [isSignedIn, router]);
 
   return (
     <main className="min-h-screen overflow-hidden relative">
       <AnimationStyles />
+      <StarryBackground />
 
       <div className="absolute inset-0 z-0">
         <Image
