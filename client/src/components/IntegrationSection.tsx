@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function IntegrationSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -37,9 +38,11 @@ export default function IntegrationSection() {
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8">
                 <div className="flex flex-col items-center">
                   <div className="w-24 h-24 bg-white rounded-lg shadow-md flex items-center justify-center mb-2">
-                    <img
+                    <Image
                       src="/icons/slack.svg"
                       alt="Slack"
+                      width={24}
+                      height={24}
                       className="w-10 h-10"
                     />
                   </div>
@@ -50,9 +53,11 @@ export default function IntegrationSection() {
 
                 <div className="flex flex-col items-center">
                   <div className="w-24 h-24 bg-white rounded-lg shadow-md flex items-center justify-center mb-2">
-                    <img
+                    <Image
                       src="/icons/discord.svg"
                       alt="Discord"
+                      width={24}
+                      height={24}
                       className="w-10 h-10"
                     />
                   </div>
@@ -63,9 +68,11 @@ export default function IntegrationSection() {
 
                 <div className="flex flex-col items-center">
                   <div className="w-24 h-24 bg-white rounded-lg shadow-md flex items-center justify-center mb-2">
-                    <img
+                    <Image
                       src="/icons/teams.svg"
                       alt="MS Teams"
+                      width={24}
+                      height={24}
                       className="w-10 h-10"
                     />
                   </div>
@@ -76,9 +83,11 @@ export default function IntegrationSection() {
 
                 <div className="flex flex-col items-center">
                   <div className="w-24 h-24 bg-white rounded-lg shadow-md flex items-center justify-center mb-2">
-                    <img
+                    <Image
                       src="/icons/discourse.svg"
                       alt="Discourse"
+                      width={24}
+                      height={24}
                       className="w-10 h-10"
                     />
                   </div>
@@ -89,9 +98,11 @@ export default function IntegrationSection() {
 
                 <div className="flex flex-col items-center">
                   <div className="w-24 h-24 bg-white rounded-lg shadow-md flex items-center justify-center mb-2">
-                    <img
+                    <Image
                       src="/icons/email.svg"
                       alt="Email"
+                      width={24}
+                      height={24}
                       className="w-10 h-10"
                     />
                   </div>
@@ -102,9 +113,11 @@ export default function IntegrationSection() {
 
                 <div className="flex flex-col items-center">
                   <div className="w-24 h-24 bg-white rounded-lg shadow-md flex items-center justify-center mb-2">
-                    <img
+                    <Image
                       src="/icons/chat.svg"
                       alt="Chat"
+                      width={24}
+                      height={24}
                       className="w-10 h-10"
                     />
                   </div>
@@ -115,9 +128,11 @@ export default function IntegrationSection() {
 
                 <div className="flex flex-col items-center">
                   <div className="w-24 h-24 bg-white rounded-lg shadow-md flex items-center justify-center mb-2">
-                    <img
+                    <Image
                       src="/icons/forms.svg"
                       alt="Forms"
+                      width={24}
+                      height={24}
                       className="w-10 h-10"
                     />
                   </div>
@@ -128,7 +143,13 @@ export default function IntegrationSection() {
 
                 <div className="flex flex-col items-center">
                   <div className="w-24 h-24 bg-white rounded-lg shadow-md flex items-center justify-center mb-2">
-                    <img src="/icons/api.svg" alt="API" className="w-10 h-10" />
+                    <Image
+                      src="/icons/api.svg"
+                      alt="API"
+                      width={24}
+                      height={24}
+                      className="w-10 h-10"
+                    />
                   </div>
                   <span className="text-xs uppercase tracking-wider text-gray-500">
                     API

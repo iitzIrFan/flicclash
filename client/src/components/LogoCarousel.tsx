@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function LogoCarousel() {
   const [isVisible, setIsVisible] = useState(false);
@@ -54,35 +55,85 @@ export default function LogoCarousel() {
             >
               {/* Logo Items */}
               <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                <img src="/logos/stytch.svg" alt="Stytch" className="h-8" />
-              </div>
-              <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                <img src="/logos/mintify.svg" alt="Mintify" className="h-8" />
-              </div>
-              <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                <img src="/logos/sanity.svg" alt="Sanity" className="h-8" />
-              </div>
-              <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                <img
-                  src="/logos/evervault.svg"
-                  alt="Evervault"
+                <Image
+                  src="/logos/stytch.svg"
+                  alt="Stytch"
+                  width={100}
+                  height={100}
                   className="h-8"
                 />
               </div>
               <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                <img src="/logos/kick.svg" alt="Kick" className="h-8" />
+                <Image
+                  src="/logos/mintify.svg"
+                  alt="Mintify"
+                  width={100}
+                  height={100}
+                  className="h-8"
+                />
               </div>
               <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                <img src="/logos/granola.svg" alt="Granola" className="h-8" />
+                <Image
+                  src="/logos/sanity.svg"
+                  alt="Sanity"
+                  width={100}
+                  height={100}
+                  className="h-8"
+                />
               </div>
               <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                <img src="/logos/galileo.svg" alt="Galileo" className="h-8" />
+                <Image
+                  src="/logos/evervault.svg"
+                  alt="Evervault"
+                  width={100}
+                  height={100}
+                  className="h-8"
+                />
               </div>
               <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                <img src="/logos/raycast.svg" alt="Raycast" className="h-8" />
+                <Image
+                  src="/logos/kick.svg"
+                  alt="Kick"
+                  width={100}
+                  height={100}
+                  className="h-8"
+                />
               </div>
               <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                <img src="/logos/laravel.svg" alt="Laravel" className="h-8" />
+                <Image
+                  src="/logos/granola.svg"
+                  alt="Granola"
+                  width={100}
+                  height={100}
+                  className="h-8"
+                />
+              </div>
+              <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+                <Image
+                  src="/logos/galileo.svg"
+                  alt="Galileo"
+                  width={100}
+                  height={100}
+                  className="h-8"
+                />
+              </div>
+              <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+                <Image
+                  src="/logos/raycast.svg"
+                  alt="Raycast"
+                  width={100}
+                  height={100}
+                  className="h-8"
+                />
+              </div>
+              <div className="flex-shrink-0 flex items-center justify-center h-12 w-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+                <Image
+                  src="/logos/laravel.svg"
+                  alt="Laravel"
+                  width={100}
+                  height={100}
+                  className="h-8"
+                />
               </div>
             </div>
           </div>

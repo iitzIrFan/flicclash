@@ -6,16 +6,13 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { StarryBackground } from "@/components/StarryBackground";
-import { HeroGlow } from "@/components/HeroGlow";
-import Link from "next/link";
+
 import {
-  Bookmark,
   Clock,
   Search,
   Trash2,
   ExternalLink,
   ArrowLeft,
-  Filter,
   Calendar,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,7 +34,7 @@ export default function BookmarksPage() {
   const [bookmarkedContests, setBookmarkedContests] = useState<
     BookmarkedContest[]
   >([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState<string>("all");
 
@@ -66,7 +63,7 @@ export default function BookmarksPage() {
           },
           // Add more sample contests as needed
         ]);
-        setLoading(false);
+        setIsLoading(false);
       }, 1000);
     }
   }, [isLoaded, isSignedIn, router]);
@@ -95,6 +92,19 @@ export default function BookmarksPage() {
     if (hours > 0) return `${hours}h ${minutes}m`;
     return `${minutes}m`;
   };
+
+  if (!isLoaded || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="relative w-20 h-20">
+          <div className="absolute inset-0 rounded-full border-4 border-blue-500/20"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-t-blue-500 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+          <div className="absolute inset-2 rounded-full border-4 border-t-transparent border-r-blue-400 border-b-transparent border-l-transparent animate-spin animation-delay-150"></div>
+          <div className="absolute inset-4 rounded-full border-4 border-t-transparent border-r-transparent border-b-blue-300 border-l-transparent animate-spin animation-delay-300"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden">
