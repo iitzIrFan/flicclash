@@ -1,84 +1,89 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { UserButton } from "@clerk/nextjs";
+import { useAuth, UserButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { StarryBackground } from "@/components/StarryBackground";
+import { HeroGlow } from "@/components/HeroGlow";
 import Link from "next/link";
+import {
+  Bookmark,
+  Clock,
+  Search,
+  Trash2,
+  ExternalLink,
+  ArrowLeft,
+  Filter,
+  Calendar,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-interface Contest {
+interface BookmarkedContest {
   id: string;
   name: string;
-  platform: "Codeforces" | "CodeChef" | "LeetCode";
+  platform: string;
   startTime: string;
-  endTime: string;
   url: string;
-  isBookmarked?: boolean;
-  solutionUrl?: string;
+  difficulty?: string;
 }
 
 export default function BookmarksPage() {
-  const [bookmarkedContests, setBookmarkedContests] = useState<Contest[]>([]);
+  const { isSignedIn, isLoaded } = useAuth();
+  const router = useRouter();
+  const [bookmarkedContests, setBookmarkedContests] = useState<
+    BookmarkedContest[]
+  >([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState<string>("all");
 
   useEffect(() => {
-    const fetchBookmarkedContests = async () => {
-      try {
-        const response = await fetch("/api/bookmarks");
-        if (!response.ok) throw new Error("Failed to fetch bookmarks");
-
-        const bookmarks = await response.json();
-
-        const contestsResponse = await fetch("/api/contests");
-        if (!contestsResponse.ok) throw new Error("Failed to fetch contests");
-
-        const allContests = await contestsResponse.json();
-
-        const bookmarkedContests = allContests
-          .filter((contest: Contest) =>
-            bookmarks.some(
-              (b: { contestId: string }) => b.contestId === contest.id
-            )
-          )
-          .map((contest: Contest) => ({
-            ...contest,
-            isBookmarked: true,
-          }));
-
-        setBookmarkedContests(bookmarkedContests);
-      } catch (error) {
-        console.error("Error fetching bookmarked contests:", error);
-      } finally {
+    if (isLoaded && !isSignedIn) {
+      router.push("/");
+    } else {
+      // Simulate fetching bookmarked contests
+      setTimeout(() => {
+        setBookmarkedContests([
+          {
+            id: "1",
+            name: "Codeforces Round #789",
+            platform: "Codeforces",
+            startTime: new Date(Date.now() + 86400000).toISOString(),
+            url: "https://codeforces.com",
+            difficulty: "Hard",
+          },
+          {
+            id: "2",
+            name: "LeetCode Weekly Contest",
+            platform: "LeetCode",
+            startTime: new Date(Date.now() + 172800000).toISOString(),
+            url: "https://leetcode.com",
+            difficulty: "Medium",
+          },
+          // Add more sample contests as needed
+        ]);
         setLoading(false);
-      }
-    };
-
-    fetchBookmarkedContests();
-  }, []);
-
-  const removeBookmark = async (contestId: string) => {
-    try {
-      setBookmarkedContests((prev) => prev.filter((c) => c.id !== contestId));
-
-      const response = await fetch("/api/bookmarks", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contestId }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to remove bookmark");
-      }
-    } catch (error) {
-      console.error("Error removing bookmark:", error);
-
-      const fetchBookmarkedContests = async () => {};
-      fetchBookmarkedContests();
+      }, 1000);
     }
-  };
+  }, [isLoaded, isSignedIn, router]);
+
+  const filteredContests = bookmarkedContests.filter((contest) => {
+    const matchesSearch = contest.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesPlatform =
+      selectedPlatform === "all" || contest.platform === selectedPlatform;
+    return matchesSearch && matchesPlatform;
+  });
 
   const getTimeRemaining = (startTime: string) => {
-    const now = new Date();
-    const start = new Date(startTime);
-    const diff = start.getTime() - now.getTime();
+    const start = new Date(startTime).getTime();
+    const now = new Date().getTime();
+    const diff = start - now;
 
     if (diff <= 0) return "Started";
 
@@ -92,181 +97,168 @@ export default function BookmarksPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Bookmarked Contests
-          </h1>
-          <div className="flex items-center space-x-4">
-            <Link
-              href="/dashboard"
-              className="text-gray-600 hover:text-gray-900"
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/tp.jpg"
+          alt="Background"
+          fill
+          priority
+          className="object-cover"
+          quality={100}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/10 via-white/30 to-blue-900/10 backdrop-blur-[2px]"></div>
+      </div>
+
+      <StarryBackground />
+
+      {/* Content */}
+      <div className="relative z-10 p-6 max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between mb-8"
+        >
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.push("/dashboard")}
+              className="bg-white/50 hover:bg-white/70 transition-all duration-200"
             >
-              Dashboard
-            </Link>
-            <Link
-              href="/settings"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              Settings
-            </Link>
-            <UserButton afterSignOutUrl="/" />
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+              Bookmarked Contests
+            </h1>
           </div>
+          <UserButton afterSignOutUrl="/" />
+        </motion.div>
+
+        {/* Search and filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className="mb-6 bg-white/50 backdrop-blur-sm border border-white/20">
+            <CardContent className="p-4">
+              <div className="flex flex-wrap gap-4">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                  <input
+                    type="text"
+                    placeholder="Search bookmarks..."
+                    className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/50 border border-white/20 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  {["all", "Codeforces", "LeetCode", "CodeChef"].map(
+                    (platform) => (
+                      <Button
+                        key={platform}
+                        variant={
+                          selectedPlatform === platform ? "default" : "outline"
+                        }
+                        onClick={() => setSelectedPlatform(platform)}
+                        className={`${
+                          selectedPlatform === platform
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white/50 hover:bg-white/70"
+                        } transition-all duration-200`}
+                      >
+                        {platform === "all" ? "All Platforms" : platform}
+                      </Button>
+                    )
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Bookmarked contests grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredContests.map((contest, index) => (
+            <motion.div
+              key={contest.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+            >
+              <Card className="group bg-white/60 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border border-white/20">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <Badge
+                      variant="outline"
+                      className={`${
+                        contest.platform === "Codeforces"
+                          ? "bg-red-100 text-red-800 border-red-200"
+                          : contest.platform === "CodeChef"
+                          ? "bg-amber-100 text-amber-800 border-amber-200"
+                          : "bg-green-100 text-green-800 border-green-200"
+                      }`}
+                    >
+                      {contest.platform}
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-red-400 hover:text-red-600 hover:bg-red-50"
+                      onClick={() => {
+                        // Handle remove bookmark
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                    <a
+                      href={contest.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-indigo-600 flex items-start gap-1 group-hover:gap-2 transition-all duration-200"
+                    >
+                      {contest.name}
+                      <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </a>
+                  </h3>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Calendar className="h-4 w-4" />
+                    <span>
+                      {new Date(contest.startTime).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                    <Clock className="h-4 w-4" />
+                    <span>{getTimeRemaining(contest.startTime)}</span>
+                  </div>
+                  {contest.difficulty && (
+                    <div className="mt-3">
+                      <Badge
+                        variant="outline"
+                        className={`${
+                          contest.difficulty === "Hard"
+                            ? "bg-red-50 text-red-600 border-red-100"
+                            : contest.difficulty === "Medium"
+                            ? "bg-yellow-50 text-yellow-600 border-yellow-100"
+                            : "bg-green-50 text-green-600 border-green-100"
+                        }`}
+                      >
+                        {contest.difficulty}
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-          </div>
-        ) : bookmarkedContests.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <p className="text-gray-600 mb-4">
-              You have not bookmarked any contests yet.
-            </p>
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center text-blue-600 hover:text-blue-800"
-            >
-              Go to dashboard to browse contests
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 ml-1"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </Link>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contest
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Platform
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {bookmarkedContests.map((contest) => {
-                  const now = new Date();
-                  const startTime = new Date(contest.startTime);
-                  const endTime = new Date(contest.endTime);
-                  const isPast = endTime < now;
-                  const isLive = startTime <= now && endTime >= now;
-
-                  return (
-                    <tr key={contest.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <a
-                          href={contest.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 font-medium"
-                        >
-                          {contest.name}
-                        </a>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            contest.platform === "Codeforces"
-                              ? "bg-red-100 text-red-800"
-                              : contest.platform === "CodeChef"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
-                          }`}
-                        >
-                          {contest.platform}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {isPast ? (
-                          <span className="text-gray-500">Ended</span>
-                        ) : isLive ? (
-                          <span className="text-green-600 font-medium">
-                            Live Now
-                          </span>
-                        ) : (
-                          <span className="text-blue-600">
-                            Starts in {getTimeRemaining(contest.startTime)}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => removeBookmark(contest.id)}
-                            className="text-yellow-500 hover:text-gray-500"
-                            aria-label="Remove bookmark"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-6 w-6"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                            </svg>
-                          </button>
-
-                          {isPast && contest.solutionUrl && (
-                            <a
-                              href={contest.solutionUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-gray-400 hover:text-red-500"
-                              aria-label="Watch solution"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                                />
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                            </a>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </main>
+      </div>
     </div>
   );
 }
