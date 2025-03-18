@@ -1,3 +1,9 @@
+FlicClash - Contest Tracker
+
+![image](https://github.com/user-attachments/assets/f72dec5d-e0c3-4ba6-bee4-6313ba19c5cd)
+
+
+
 ## Overview
 
 > Contest Tracker is a comprehensive platform designed to help competitive programmers stay organized and never miss important coding contests. It aggregates contests from popular platforms like Codeforces, LeetCode, and CodeChef into a single, beautiful dashboard with personalized notifications and bookmarking features.
