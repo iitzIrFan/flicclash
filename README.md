@@ -40,9 +40,13 @@ Frontend:
 
 Backend
 > Express.js - Node.js web application framework
+
 > Prisma - Type-safe ORM for database access
+
 > PostgreSQL - Relational database
+
 > Node-cron - Task scheduler for background jobs
+
 > Twilio - SMS notifications
 
 
