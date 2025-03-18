@@ -27,19 +27,19 @@ https://www.loom.com/share/08a0e41d6cb44023a8813bbb7ac70532
 ## Tech Stack
 
 Frontend: 
-Next.js - React framework with server-side rendering
-TypeScript - Type-safe JavaScript
-Tailwind CSS - Utility-first CSS framework
-Framer Motion - Animation library
-Clerk - Authentication and user management
+> Next.js - React framework with server-side rendering
+> TypeScript - Type-safe JavaScript
+> Tailwind CSS - Utility-first CSS framework
+> Framer Motion - Animation library
+> Clerk - Authentication and user management
 
 
 Backend
-Express.js - Node.js web application framework
-Prisma - Type-safe ORM for database access
-PostgreSQL - Relational database
-Node-cron - Task scheduler for background jobs
-Twilio - SMS notifications
+> Express.js - Node.js web application framework
+> Prisma - Type-safe ORM for database access
+> PostgreSQL - Relational database
+> Node-cron - Task scheduler for background jobs
+> Twilio - SMS notifications
 
 
 ## Deployment
