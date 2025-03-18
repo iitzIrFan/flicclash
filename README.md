@@ -2,6 +2,8 @@ FlicClash - Contest Tracker
 
 ![image](https://github.com/user-attachments/assets/f72dec5d-e0c3-4ba6-bee4-6313ba19c5cd)
 
+![image](https://github.com/user-attachments/assets/513f01e8-1ad5-46e3-8b31-ed630d3aab6e)
+
 
 
 ## Overview
