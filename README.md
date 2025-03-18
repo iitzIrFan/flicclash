@@ -28,9 +28,13 @@ https://www.loom.com/share/08a0e41d6cb44023a8813bbb7ac70532
 
 Frontend: 
 > Next.js - React framework with server-side rendering
+
 > TypeScript - Type-safe JavaScript
+
 > Tailwind CSS - Utility-first CSS framework
+
 > Framer Motion - Animation library
+
 > Clerk - Authentication and user management
 
 
